@@ -1,0 +1,13 @@
+name: learning-compilers
+version: 0.1.0
+
+authors:
+  - Augustinas <augustinas@spotlightdata.co.uk>
+
+targets:
+  learning-compilers:
+    main: src/learning-compilers.cr
+
+crystal: 1.1.1
+
+license: MIT
