@@ -164,7 +164,14 @@ class Scanner
             #
             end_pos = read_identifier(reader)
             if end_pos != -1
-              acc << Token.make(tkn_type, line[pos..end_pos], line_idx, pos)
+              id = line[pos..end_pos]
+              tkn_type =
+                if val = Token.reserved?(id)
+                  val
+                else
+                  tkn_type
+                end
+              acc << Token.make(tkn_type, id, line_idx, pos)
             else
               report(line_idx, pos, "Invalid identifier")
               exit(1)

@@ -58,6 +58,29 @@ module Token
     Eof
   end
 
+  RESERVED = {
+    "and"    => Type::And,
+    "class"  => Type::Class,
+    "else"   => Type::Else,
+    "false"  => Type::False,
+    "fun"    => Type::Fun,
+    "for"    => Type::For,
+    "if"     => Type::If,
+    "nil"    => Type::Nil,
+    "or"     => Type::Or,
+    "print"  => Type::Print,
+    "return" => Type::Return,
+    "super"  => Type::Super,
+    "this"   => Type::This,
+    "true"   => Type::True,
+    "var"    => Type::Var,
+    "while"  => Type::While,
+  } of String => Type
+
+  def self.reserved?(identifier)
+    RESERVED[identifier]?
+  end
+
   struct Token
     def initialize(
       @type : Type,
