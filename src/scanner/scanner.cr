@@ -7,8 +7,6 @@ class Scanner
   @failed = false
 
   def initialize(@raw : String)
-    output = scan(@raw)
-    puts output
   end
 
   def report(line, char, message)
@@ -193,7 +191,8 @@ class Scanner
 
   # At the moment, we have no way to support multiline strings
   # or comments.
-  def scan(source)
+  def scan
+    source = @raw
     lines = source.lines
     # map with index could also work here?
     tokens = lines.map_with_index do |row, line_idx|

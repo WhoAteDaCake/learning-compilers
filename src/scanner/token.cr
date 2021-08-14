@@ -82,6 +82,8 @@ module Token
   end
 
   struct Token
+    property type
+
     def initialize(
       @type : Type,
       @literal : String | Nil | Float32,
