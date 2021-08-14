@@ -1,1 +1,5 @@
-var language = "lox";
+12.22
+// this is a comment
+//(( )){} // grouping stuff
+//!*+-/=<> <= == // operators
+"Hello"

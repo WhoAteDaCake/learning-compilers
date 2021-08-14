@@ -1,35 +1,39 @@
-enum TokenType
-  # Single-character tokens.
-  LEFT_PAREN
-  RIGHT_PAREN
-  LEFT_BRACE
-  RIGHT_BRACE
+enum TType
+  # Special
+  Comment
+  WhiteSpace
 
-  COMMA
-  DOT
-  MINUS
-  PLUS
-  SEMICOLON
-  SLASH
-  STAR
+  # Single-character tokens.
+  LeftParen
+  RightParen
+  LeftBrace
+  RightBrace
+
+  Comma
+  Dot
+  Minus
+  Plus
+  SemiColon
+  Slash
+  Star
 
   # One or two character tokens.
-  BANG
-  BANG_EQUAL
+  Bang
+  BangEqual
 
-  EQUAL
-  EQUAL_EQUAL
+  Equal
+  EqualEqual
 
-  GREATER
-  GREATER_EQUAL
+  Greater
+  GreaterEqual
 
-  LESS
-  LESS_EQUAL
+  Less
+  LessEqual
 
   # Literals.
-  IDENTIFIER
-  STRING
-  NUMBER
+  Identifier
+  String
+  Number
 
   # Keywords.
   AND
@@ -55,11 +59,10 @@ end
 
 struct Token
   def initialize(
-    @type : TokenType,
-    @lexeme : String,
-    @literal,
-    @line : Int64,
-    @offset : Int64
+    @type : TType,
+    @literal : String | Nil | Float32,
+    @line : Int32,
+    @offset : Int32
   )
   end
 end
