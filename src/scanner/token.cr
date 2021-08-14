@@ -1,68 +1,74 @@
-enum TType
-  # Special
-  Comment
-  WhiteSpace
+module Token
+  enum Type
+    # Special
+    Comment
+    WhiteSpace
 
-  # Single-character tokens.
-  LeftParen
-  RightParen
-  LeftBrace
-  RightBrace
+    # Single-character tokens.
+    LeftParen
+    RightParen
+    LeftBrace
+    RightBrace
 
-  Comma
-  Dot
-  Minus
-  Plus
-  SemiColon
-  Slash
-  Star
+    Comma
+    Dot
+    Minus
+    Plus
+    SemiColon
+    Slash
+    Star
 
-  # One or two character tokens.
-  Bang
-  BangEqual
+    # One or two character tokens.
+    Bang
+    BangEqual
 
-  Equal
-  EqualEqual
+    Equal
+    EqualEqual
 
-  Greater
-  GreaterEqual
+    Greater
+    GreaterEqual
 
-  Less
-  LessEqual
+    Less
+    LessEqual
 
-  # Literals.
-  Identifier
-  String
-  Number
+    # Literals.
+    Identifier
+    String
+    Number
 
-  # Keywords.
-  AND
-  CLASS
-  ELSE
-  FALSE
-  FUN
-  FOR
-  IF
-  NIL
-  OR
+    # Keywords.
+    And
+    Class
+    Else
+    False
+    Fun
+    For
+    If
+    Nil
+    Or
 
-  PRINT
-  RETURN
-  SUPER
-  THIS
-  TRUE
-  VAR
-  WHILE
+    Print
+    Return
+    Super
+    This
+    True
+    Var
+    While
 
-  EOF
-end
+    Eof
+  end
 
-struct Token
-  def initialize(
-    @type : TType,
-    @literal : String | Nil | Float32,
-    @line : Int32,
-    @offset : Int32
-  )
+  struct Token
+    def initialize(
+      @type : Type,
+      @literal : String | Nil | Float32,
+      @line : Int32,
+      @offset : Int32
+    )
+    end
+  end
+
+  def self.make(*args)
+    Token.new(*args)
   end
 end

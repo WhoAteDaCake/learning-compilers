@@ -1,5 +1,1 @@
-12.22
-// this is a comment
-//(( )){} // grouping stuff
-//!*+-/=<> <= == // operators
-"Hello"
+var language = "12.1";

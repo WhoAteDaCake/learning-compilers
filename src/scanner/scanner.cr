@@ -19,61 +19,63 @@ class Scanner
   def scan_char(reader, ch)
     # NOTE: would dictionary be better here?
     if ch == '('
-      TType::LeftParen
+      Token::Type::LeftParen
     elsif ch == ')'
-      TType::RightParen
+      Token::Type::RightParen
     elsif ch == '{'
-      TType::LeftBrace
+      Token::Type::LeftBrace
     elsif ch == '}'
-      TType::RightBrace
+      Token::Type::RightBrace
     elsif ch == ','
-      TType::Comma
+      Token::Type::Comma
     elsif ch == '.'
-      TType::Dot
+      Token::Type::Dot
     elsif ch == '-'
-      TType::Minus
+      Token::Type::Minus
     elsif ch == '+'
-      TType::Plus
+      Token::Type::Plus
     elsif ch == ';'
-      TType::SemiColon
+      Token::Type::SemiColon
     elsif ch == '*'
-      TType::Star
+      Token::Type::Star
     elsif ch == '!'
       if reader.move_if('=')
-        TType::BangEqual
+        Token::Type::BangEqual
       else
-        TType::Bang
+        Token::Type::Bang
       end
     elsif ch == '='
       if reader.move_if('=')
-        TType::EqualEqual
+        Token::Type::EqualEqual
       else
-        TType::Equal
+        Token::Type::Equal
       end
     elsif ch == '<'
       if reader.move_if('=')
-        TType::LessEqual
+        Token::Type::LessEqual
       else
-        TType::Less
+        Token::Type::Less
       end
     elsif ch == '>'
       if reader.move_if('=')
-        TType::GreaterEqual
+        Token::Type::GreaterEqual
       else
-        TType::Greater
+        Token::Type::Greater
       end
     elsif ch == '/'
       if reader.move_if('/')
-        TType::Comment
+        Token::Type::Comment
       else
-        TType::Slash
+        Token::Type::Slash
       end
     elsif ch.ascii_whitespace?
-      TType::WhiteSpace
+      Token::Type::WhiteSpace
     elsif ch == '"'
-      TType::String
+      Token::Type::String
     elsif ch.ascii_number?
-      TType::Number
+      Token::Type::Number
+    elsif ch.ascii_letter?
+      Token::Type::Identifier
     else
       nil
     end
@@ -87,7 +89,7 @@ class Scanner
         end_i = reader.pos
         break
       end
-      break if !reader.has_next?
+      break unless reader.has_next?
     end
     end_i
   end
@@ -111,40 +113,64 @@ class Scanner
     end_i
   end
 
+  def read_identifier(reader)
+    end_i = -1
+    loop do
+      if reader.current_char.alphanumeric?
+        end_i = reader.pos
+      else
+        break
+      end
+      break unless reader.has_next?
+      reader.next_char
+    end
+    end_i
+  end
+
   # TODO:
   # - Support of multi-line strings
+  # - There should be a better approach here ?
   def scan_line(line, line_idx)
     if line.size == 0
-      [] of Token
+      [] of Token::Token
     else
       reader = SafeReader.new(line)
-      acc = [] of Token
+      acc = [] of Token::Token
       loop do
         pos = reader.pos
         tkn_type = scan_char(reader, reader.current_char)
         if tkn_type
           # Comments skip the rest of the line
-          if tkn_type == TType::Comment
+          if tkn_type == Token::Type::Comment
             break
-          elsif tkn_type == TType::String
+          elsif tkn_type == Token::Type::String
             end_pos = read_string(reader)
             if end_pos != -1
-              acc << Token.new(tkn_type, line[pos + 1, end_pos - 1], line_idx, pos)
+              acc << Token.make(tkn_type, line[(pos + 1)..(end_pos - 1)], line_idx, pos)
             else
               report(line_idx, pos, "Unterminated string")
               exit(1)
             end
-          elsif tkn_type == TType::Number
+          elsif tkn_type == Token::Type::Number
             #
             end_pos = read_number(reader)
             if end_pos != -1
-              acc << Token.new(tkn_type, line[pos, end_pos + 1].to_f32, line_idx, pos)
+              acc << Token.make(tkn_type, line[pos..end_pos].to_f32, line_idx, pos)
             else
               report(line_idx, pos, "Invalid number")
               exit(1)
             end
-          elsif tkn_type != TType::WhiteSpace
-            acc << Token.new(tkn_type, nil, line_idx, pos)
+          elsif tkn_type == Token::Type::Identifier
+            #
+            end_pos = read_identifier(reader)
+            if end_pos != -1
+              acc << Token.make(tkn_type, line[pos..end_pos], line_idx, pos)
+            else
+              report(line_idx, pos, "Invalid identifier")
+              exit(1)
+            end
+          elsif tkn_type != Token::Type::WhiteSpace
+            acc << Token.make(tkn_type, nil, line_idx, pos)
           end
         else
           report(line_idx, pos, "Unexpected char: [#{reader.current_char}]")
@@ -158,6 +184,8 @@ class Scanner
     end
   end
 
+  # At the moment, we have no way to support multiline strings
+  # or comments.
   def scan(source)
     lines = source.lines
     # map with index could also work here?
@@ -174,7 +202,7 @@ class Scanner
         # Make -1 here, so we don't try to access by mistake
         -1
       end
-    tokens << Token.new(TType::EOF, nil, lines.size - 1, eof_offset)
+    tokens << Token.make(Token::Type::Eof, nil, lines.size - 1, eof_offset)
     tokens
   end
 end
