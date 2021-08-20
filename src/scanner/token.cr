@@ -82,7 +82,7 @@ module Token
   end
 
   struct Token
-    property type
+    property type, literal
 
     def initialize(
       @type : Type,

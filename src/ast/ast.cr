@@ -1,4 +1,4 @@
-module Parser
+module Ast
   macro ast(name, *properties)
 	  class {{name.id}} < Expression
 	    {% for property in properties %}
@@ -34,7 +34,7 @@ module Parser
     expr : Expression
 
   ast Literal,
-    value : Token::Token
+    value : String | Float32 | Bool | Nil
 
   ast Unary,
     operator : Token::Token,
