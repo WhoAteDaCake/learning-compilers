@@ -58,6 +58,19 @@ module Token
     Eof
   end
 
+  # Tokens, which can be a starting point
+  # after we ecounter a syntax error
+  SYNC_TOKENS = [
+    Type::Class,
+    Type::Return,
+    Type::Fun,
+    Type::Var,
+    Type::While,
+    Type::For,
+    Type::If,
+    Type::Print,
+  ]
+
   RESERVED = {
     "and"    => Type::And,
     "class"  => Type::Class,
@@ -77,6 +90,10 @@ module Token
     "while"  => Type::While,
   } of String => Type
 
+  def self.is_sync(type)
+    SYNC_TOKENS.includes?[type]
+  end
+
   def self.reserved?(identifier)
     RESERVED[identifier]?
   end
@@ -86,10 +103,18 @@ module Token
 
     def initialize(
       @type : Type,
-      @literal : String | Nil | Float32,
+      @literal : String | Float32,
       @line : Int32,
       @offset : Int32
     )
+    end
+
+    def display
+      "#{@literal}"
+    end
+
+    def to_s
+      "#{type} @ (#{@line + 1},#{@offset + 1})"
     end
   end
 

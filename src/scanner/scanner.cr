@@ -175,7 +175,7 @@ class Scanner
               exit(1)
             end
           elsif tkn_type != Token::Type::WhiteSpace
-            acc << Token.make(tkn_type, nil, line_idx, pos)
+            acc << Token.make(tkn_type, line[(pos)..(reader.pos)], line_idx, pos)
           end
         else
           report(line_idx, pos, "Unexpected char: [#{reader.current_char}]")
@@ -208,7 +208,7 @@ class Scanner
         # Make -1 here, so we don't try to access by mistake
         -1
       end
-    tokens << Token.make(Token::Type::Eof, nil, lines.size - 1, eof_offset)
+    tokens << Token.make(Token::Type::Eof, "EOF", lines.size - 1, eof_offset)
     tokens
   end
 end

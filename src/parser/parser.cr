@@ -1,4 +1,7 @@
 module Parser
+  class InvalidToken < Exception
+  end
+
   class Parser
     @current = 0
 
@@ -17,12 +20,32 @@ module Parser
       @tokens[@current - 1]
     end
 
+    def done
+      @current == @tokens.size
+    end
+
+    def invalid(message)
+      InvalidToken.new("Invalid token: #{current.to_s}.\n#{message}")
+    end
+
     def consume(expected, message)
-      if current.type != token
-        puts "Invalid token: #{current}\n#{message}"
-        exit(1)
+      if current.type != expected
+        invalid(message)
+      else
+        move
+        nil
       end
+    end
+
+    def syncronise
       move
+      while !done
+        if previous.type == Token::Type::SemiColon ||
+           Token.is_sync?(current.type)
+          break
+        end
+        move
+      end
     end
 
     # Will attempt to match to any of the provided tokens
@@ -44,8 +67,13 @@ module Parser
         Ast::Literal.new(previous.literal)
       elsif match(Token::Type::LeftParen)
         expr = expression
-        consume(Token::Type::RightParen, "Expected ')' after expression")
+        err = consume(Token::Type::RightParen, "Expected ')' after expression")
+        if err
+          raise err
+        end
         Ast::Grouping.new(expr)
+      else
+        raise invalid("Expected expression")
       end
     end
 
@@ -97,6 +125,15 @@ module Parser
 
     def expression
       equality()
+    end
+
+    def parse
+      begin
+        expression
+      rescue ex
+        puts ex.message
+        exit(-1)
+      end
     end
   end
 end

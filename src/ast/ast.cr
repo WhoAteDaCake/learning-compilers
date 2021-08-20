@@ -28,15 +28,31 @@ module Ast
   ast Binary,
     left : Expression,
     operator : Token::Token,
-    right : Expression
+    right : Expression do
+    def display
+      "#{@left.display} #{@operator.display} #{@right.display}"
+    end
+  end
 
   ast Grouping,
-    expr : Expression
+    expr : Expression do
+    def display
+      "(#{@expr.display})"
+    end
+  end
 
   ast Literal,
-    value : String | Float32 | Bool | Nil
+    value : String | Float32 | Bool | Nil do
+    def display
+      "#{@value}"
+    end
+  end
 
   ast Unary,
     operator : Token::Token,
-    right : Expression
+    right : Expression do
+    def display
+      "(#{@operator.display} #{@right.display})"
+    end
+  end
 end

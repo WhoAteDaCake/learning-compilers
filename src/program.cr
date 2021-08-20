@@ -6,7 +6,10 @@ module Program
   def self.run
     scanner = Scanner.new(ARGF.gets_to_end)
     tokens = scanner.scan
-    puts tokens
+
+    parser = Parser::Parser.new(tokens)
+    ast = parser.parse
+    puts ast.display
   end
 end
 
