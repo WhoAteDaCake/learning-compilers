@@ -5,8 +5,8 @@ authors:
   - Augustinas <augustinas@spotlightdata.co.uk>
 
 targets:
-  learning-compilers:
-    main: src/learning-compilers.cr
+  program:
+    main: src/program.cr
 
 crystal: 1.1.1
 

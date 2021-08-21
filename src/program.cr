@@ -1,6 +1,7 @@
 require "./scanner/*"
 require "./ast/*"
 require "./parser/*"
+require "./interpreter/*"
 
 module Program
   def self.run
@@ -9,7 +10,11 @@ module Program
 
     parser = Parser::Parser.new(tokens)
     ast = parser.parse
-    puts ast.display
+
+    pp! ast
+    interpreter = Interpreter::Interpreter.new(ast)
+    puts "Output: #{interpreter.run}"
+    # puts ast.display
   end
 end
 
