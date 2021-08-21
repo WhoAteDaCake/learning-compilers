@@ -11,9 +11,9 @@ module Program
     parser = Parser::Parser.new(tokens)
     ast = parser.parse
 
-    pp! ast
+    # pp! ast
     interpreter = Interpreter::Interpreter.new(ast)
-    puts "Output: #{interpreter.run}"
+    puts "Output: [#{interpreter.run}]"
     # puts ast.display
   end
 end

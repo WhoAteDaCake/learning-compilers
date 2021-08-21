@@ -93,7 +93,13 @@ module Interpreter
     end
 
     def run
-      evaluate(@ast)
+      begin
+        evaluate(@ast)
+      rescue ex
+        puts "Failed to run"
+        puts ex.message
+        exit(1)
+      end
     end
   end
 end
