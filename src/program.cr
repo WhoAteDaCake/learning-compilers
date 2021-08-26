@@ -8,7 +8,7 @@ module Program
     scanner = Scanner.new(ARGF.gets_to_end)
     tokens = scanner.scan
 
-    # puts tokens
+    puts tokens
     parser = Parser::Parser.new(tokens)
     ast = parser.parse
 

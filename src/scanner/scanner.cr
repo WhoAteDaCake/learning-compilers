@@ -171,6 +171,8 @@ class Scanner
                 else
                   tkn_type
                 end
+              # Move back 1 characted as we add in the next loop
+              reader.previous_char
               acc << Token.make(tkn_type, id, line_idx, pos)
             else
               report(line_idx, pos, "Invalid identifier")
