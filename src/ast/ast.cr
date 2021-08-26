@@ -57,7 +57,11 @@ module Ast
   end
 
   ast Print,
-    expr : Expression
+    expr : Expression do
+    def display
+      "print(#{@expr})"
+    end
+  end
 
   alias Stmt = Expression | Print
   # ast Stmt,

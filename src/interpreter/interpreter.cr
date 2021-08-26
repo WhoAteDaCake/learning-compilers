@@ -20,7 +20,7 @@ module Interpreter
 	  	{{expr.id}}
 	  end
 
-    def initialize(@ast : Ast::Expression)
+    def initialize(@ast : Array(Ast::Stmt))
     end
 
     def is_truthy(val : Literal) : Bool
@@ -92,9 +92,15 @@ module Interpreter
       end
     end
 
+    def evaluate(ast : Ast::Print)
+      value = evaluate(ast.expr)
+      puts value
+      nil
+    end
+
     def run
       begin
-        evaluate(@ast)
+        @ast.map { |s| evaluate(s) }
       rescue ex
         puts "Failed to run"
         puts ex.message
