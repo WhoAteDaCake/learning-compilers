@@ -13,7 +13,11 @@ module Parser
     end
 
     def current
-      @tokens[@current]
+      if @current >= @tokens.size
+        @tokens.last(1)[0]
+      else
+        @tokens[@current]
+      end
     end
 
     def previous
@@ -30,14 +34,15 @@ module Parser
 
     def consume(expected, message)
       if current.type != expected
-        invalid(message)
+        raise invalid(message)
       else
         move
-        nil
+        previous
       end
     end
 
     def syncronise
+      # TODO: if current is EOF, this should throw
       move
       while !done
         if previous.type == Token::Type::SemiColon ||
@@ -67,11 +72,10 @@ module Parser
         Ast::Literal.new(previous.literal)
       elsif match(Token::Type::LeftParen)
         expr = expression
-        err = consume(Token::Type::RightParen, "Expected ')' after expression")
-        if err
-          raise err
-        end
+        consume(Token::Type::RightParen, "Expected ')' after expression")
         Ast::Grouping.new(expr)
+      elsif match(Token::Type::Identifier)
+        Ast::Variable.new(previous)
       else
         raise invalid("Expected expression")
       end
@@ -123,28 +127,25 @@ module Parser
       expr
     end
 
+    def assignment
+      # http://www.craftinginterpreters.com/statements-and-state.html
+    end
+
     def expression
-      equality()
+      assignment
+      # equality()
     end
 
     def print_st
       expr = expression
-      err = consume(Token::Type::SemiColon, "Expected ';' after value")
-      if err
-        raise err
-      else
-        Ast::Print.new(expr)
-      end
+      consume(Token::Type::SemiColon, "Expected ';' after value")
+      Ast::Print.new(expr)
     end
 
     def expression_st
       expr = expression
-      err = consume(Token::Type::SemiColon, "Expected ';' after value")
-      if err
-        raise err
-      else
-        expr
-      end
+      consume(Token::Type::SemiColon, "Expected ';' after value")
+      expr
     end
 
     def statement
@@ -155,11 +156,39 @@ module Parser
       end
     end
 
+    def var
+      name = consume(Token::Type::Identifier, "Expect variable name.")
+      initializer =
+        if match(Token::Type::Equal)
+          expression
+        else
+          nil
+        end
+      consume(Token::Type::SemiColon, "Expected ';' after variable declaration")
+      Ast::Var.new(name, initializer)
+    end
+
+    def declaration
+      begin
+        if match(Token::Type::Var)
+          var
+        else
+          statement
+        end
+      rescue ex
+        puts ex.message
+        syncronise
+        nil
+      end
+    end
+
     def parse
-      acc = [] of Ast::Stmt
+      acc = [] of Ast::Program
       begin
         while !done
-          acc << statement
+          if item = declaration
+            acc << item
+          end
         end
         acc
       rescue ex

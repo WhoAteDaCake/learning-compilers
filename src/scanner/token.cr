@@ -90,8 +90,8 @@ module Token
     "while"  => Type::While,
   } of String => Type
 
-  def self.is_sync(type)
-    SYNC_TOKENS.includes?[type]
+  def self.is_sync?(type)
+    SYNC_TOKENS.includes?(type)
   end
 
   def self.reserved?(identifier)
@@ -109,8 +109,16 @@ module Token
     )
     end
 
+    def name
+      if @literal.is_a?(String)
+        @literal
+      else
+        raise "Tried to access non string name"
+      end
+    end
+
     def display
-      "#{@literal}"
+      @literal.to_s
     end
 
     def to_s

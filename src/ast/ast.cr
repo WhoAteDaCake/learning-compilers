@@ -56,6 +56,21 @@ module Ast
     end
   end
 
+  ast Variable,
+    name : Token::Token do
+    def display
+      @name.display
+    end
+  end
+
+  ast Assign,
+    name : Token::Token,
+    value : Expression do
+    def display
+      "#{@name.display} = #{@value.display}"
+    end
+  end
+
   ast Print,
     expr : Expression do
     def display
@@ -63,12 +78,14 @@ module Ast
     end
   end
 
-  alias Stmt = Expression | Print
-  # ast Stmt,
-  #   expr : Expression,
-  #   print : Expression do
-  #   def display
-  #     "TODO"
-  #   end
-  # end
+  ast Var,
+    name : Token::Token,
+    initializer : Expression? do
+    def display
+      "var #{@name.display} = #{@initializer.display}"
+    end
+  end
+
+  alias Program = Var | Print | Expression
+  alias Value = String | Float32 | Bool | Nil
 end

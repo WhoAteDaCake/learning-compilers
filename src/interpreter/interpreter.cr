@@ -20,7 +20,9 @@ module Interpreter
 	  	{{expr.id}}
 	  end
 
-    def initialize(@ast : Array(Ast::Stmt))
+    @env = Environment.new
+
+    def initialize(@ast)
     end
 
     def is_truthy(val : Literal) : Bool
@@ -90,6 +92,18 @@ module Interpreter
       else
         nil
       end
+    end
+
+    def evaluate(ast : Ast::Var)
+      value =
+        if init = ast.initializer
+          evaluate(init)
+        else
+          nil
+        end
+      name = ast.name
+      @env.define(name.name, value)
+      nil
     end
 
     def evaluate(ast : Ast::Print)

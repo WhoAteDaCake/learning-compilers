@@ -8,12 +8,13 @@ module Program
     scanner = Scanner.new(ARGF.gets_to_end)
     tokens = scanner.scan
 
-    puts tokens
+    # puts tokens
     parser = Parser::Parser.new(tokens)
     ast = parser.parse
 
-    eval = Interpreter::Interpreter.new(ast)
-    result = eval.run
+    puts ast
+    # eval = Interpreter::Interpreter.new(ast)
+    # result = eval.run
     # puts "Output: [#{interpreter.run}]"
     # puts ast.display
   end
