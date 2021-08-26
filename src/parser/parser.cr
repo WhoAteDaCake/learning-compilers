@@ -21,7 +21,7 @@ module Parser
     end
 
     def done
-      @current == @tokens.size
+      current.type == Token::Type::Eof
     end
 
     def invalid(message)
@@ -127,9 +127,41 @@ module Parser
       equality()
     end
 
+    def print_st
+      expr = expression
+      err = consume(Token::Type::SemiColon, "Expected ';' after value")
+      if err
+        raise err
+      else
+        Ast::Print.new(expr)
+      end
+    end
+
+    def expression_st
+      expr = expression
+      err = consume(Token::Type::SemiColon, "Expected ';' after value")
+      if err
+        raise err
+      else
+        expr
+      end
+    end
+
+    def statement
+      if match(Token::Type::Print)
+        print_st
+      else
+        expression_st
+      end
+    end
+
     def parse
+      acc = [] of Ast::Stmt
       begin
-        expression
+        while !done
+          acc << statement
+        end
+        acc
       rescue ex
         puts ex.message
         exit(-1)

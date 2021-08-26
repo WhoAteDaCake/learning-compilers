@@ -55,4 +55,16 @@ module Ast
       "(#{@operator.display} #{@right.display})"
     end
   end
+
+  ast Print,
+    expr : Expression
+
+  alias Stmt = Expression | Print
+  # ast Stmt,
+  #   expr : Expression,
+  #   print : Expression do
+  #   def display
+  #     "TODO"
+  #   end
+  # end
 end

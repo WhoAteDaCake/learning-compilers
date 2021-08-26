@@ -154,6 +154,8 @@ class Scanner
             end_pos = read_number(reader)
             if end_pos != -1
               acc << Token.make(tkn_type, line[pos..end_pos].to_f32, line_idx, pos)
+              # Move back 1 characted as we add in the next loop
+              reader.previous_char
             else
               report(line_idx, pos, "Invalid number")
               exit(1)
@@ -203,7 +205,7 @@ class Scanner
     # Handles empty files
     eof_offset =
       if lines.size > 0
-        lines.last(1).size - 1
+        lines.last(1)[0].size - 1
       else
         # Make -1 here, so we don't try to access by mistake
         -1

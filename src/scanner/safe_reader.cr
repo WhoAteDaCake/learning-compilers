@@ -7,6 +7,7 @@ class SafeReader
   delegate pos, to: @reader
   # delegate pos, to: @reader
   delegate current_char, to: @reader
+  delegate previous_char, to: @reader
 
   def initialize(line : String)
     @reader = Char::Reader.new(line)
