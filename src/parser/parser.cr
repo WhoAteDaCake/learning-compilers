@@ -128,12 +128,26 @@ module Parser
     end
 
     def assignment
+      expr = equality
+
+      if match(Token::Type::Equal)
+        # It's an assignment, verify
+        equals = previous
+        value = assignment
+
+        if expr.is_a?(Ast::Variable)
+          Ast::Assign.new(expr.name, value)
+        else
+          raise invalid("Invalid assignment target")
+        end
+      else
+        expr
+      end
       # http://www.craftinginterpreters.com/statements-and-state.html
     end
 
     def expression
       assignment
-      # equality()
     end
 
     def print_st
