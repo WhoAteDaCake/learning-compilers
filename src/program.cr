@@ -12,10 +12,10 @@ module Program
     parser = Parser::Parser.new(tokens)
     ast = parser.parse
 
-    puts ast
-    # eval = Interpreter::Interpreter.new(ast)
-    # result = eval.run
-    # puts "Output: [#{interpreter.run}]"
+    # puts ast
+    eval = Interpreter::Interpreter.new(ast)
+    result = eval.run
+    # puts "Output: [#{result}]"
     # puts ast.display
   end
 end

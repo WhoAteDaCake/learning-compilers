@@ -22,7 +22,7 @@ module Interpreter
 
     @env = Environment.new
 
-    def initialize(@ast)
+    def initialize(@ast : Array(Ast::Expression))
     end
 
     def is_truthy(val : Literal) : Bool
@@ -33,6 +33,10 @@ module Interpreter
       else
         true
       end
+    end
+
+    def evaluate(ast : Ast::Variable)
+      @env.get(ast.name)
     end
 
     def evaluate(ast : Ast::Literal)
@@ -101,9 +105,14 @@ module Interpreter
         else
           nil
         end
-      name = ast.name
-      @env.define(name.name, value)
+      @env.define(ast.name, value)
       nil
+    end
+
+    def evaluate(ast : Ast::Assign)
+      value = evaluate(ast.value)
+      @env.redefine(ast.name, value)
+      value
     end
 
     def evaluate(ast : Ast::Print)

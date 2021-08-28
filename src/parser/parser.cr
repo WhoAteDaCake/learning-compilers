@@ -131,8 +131,8 @@ module Parser
       expr = equality
 
       if match(Token::Type::Equal)
-        # It's an assignment, verify
         equals = previous
+        # This allows for a = b = 3 assignments
         value = assignment
 
         if expr.is_a?(Ast::Variable)
@@ -197,7 +197,7 @@ module Parser
     end
 
     def parse
-      acc = [] of Ast::Program
+      acc = [] of Ast::Expression
       begin
         while !done
           if item = declaration
