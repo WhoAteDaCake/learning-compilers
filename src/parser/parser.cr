@@ -159,7 +159,7 @@ module Parser
     def expression_st
       expr = expression
       consume(Token::Type::SemiColon, "Expected ';' after value")
-      expr
+      Ast::Stmt.new(expr)
     end
 
     def statement
@@ -197,7 +197,7 @@ module Parser
     end
 
     def parse
-      acc = [] of Ast::Expression
+      acc = [] of Ast::Statement
       begin
         while !done
           if item = declaration

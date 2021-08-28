@@ -1,6 +1,6 @@
 module Ast
-  macro ast(name, *properties)
-	  class {{name.id}} < Expression
+  macro ast(type, name, *properties)
+	  class {{name.id}} < {{type.id}}
 	    {% for property in properties %}
 	      {% if property.is_a?(Assign) %}
 	        getter {{property.target.id}}
@@ -25,7 +25,7 @@ module Ast
   abstract class Expression
   end
 
-  ast Binary,
+  ast Expression, Binary,
     left : Expression,
     operator : Token::Token,
     right : Expression do
@@ -34,21 +34,21 @@ module Ast
     end
   end
 
-  ast Grouping,
+  ast Expression, Grouping,
     expr : Expression do
     def display
       "(#{@expr.display})"
     end
   end
 
-  ast Literal,
+  ast Expression, Literal,
     value : String | Float32 | Bool | Nil do
     def display
       "#{@value}"
     end
   end
 
-  ast Unary,
+  ast Expression, Unary,
     operator : Token::Token,
     right : Expression do
     def display
@@ -56,14 +56,14 @@ module Ast
     end
   end
 
-  ast Variable,
+  ast Expression, Variable,
     name : Token::Token do
     def display
       @name.display
     end
   end
 
-  ast Assign,
+  ast Expression, Assign,
     name : Token::Token,
     value : Expression do
     def display
@@ -71,21 +71,29 @@ module Ast
     end
   end
 
-  ast Print,
+  abstract class Statement
+  end
+
+  ast Statement, Stmt,
+    expr : Expression do
+    def display
+      "#{expr.display};"
+    end
+  end
+
+  ast Statement, Print,
     expr : Expression do
     def display
       "print(#{@expr})"
     end
   end
 
-  ast Var,
+  ast Statement, Var,
     name : Token::Token,
     initializer : Expression? do
     def display
       "var #{@name.display} = #{@initializer.display}"
     end
   end
-
-  alias Program = Var | Print | Expression
   alias Value = String | Float32 | Bool | Nil
 end
