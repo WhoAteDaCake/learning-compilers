@@ -109,9 +109,9 @@ module Token
     )
     end
 
-    def name
+    def name : String
       if @literal.is_a?(String)
-        @literal
+        @literal.as(String)
       else
         raise "Tried to access non string name"
       end

@@ -53,6 +53,10 @@ module Parser
       end
     end
 
+    def current_is?(type)
+      @tokens[@current]?.try &.type == type
+    end
+
     # Will attempt to match to any of the provided tokens
     def match(*token_types)
       if found = token_types.includes?(@tokens[@current]?.try &.type)
@@ -128,12 +132,26 @@ module Parser
     end
 
     def assignment
+      expr = equality
+
+      if match(Token::Type::Equal)
+        equals = previous
+        # This allows for a = b = 3 assignments
+        value = assignment
+
+        if expr.is_a?(Ast::Variable)
+          Ast::Assign.new(expr.name, value)
+        else
+          raise invalid("Invalid assignment target")
+        end
+      else
+        expr
+      end
       # http://www.craftinginterpreters.com/statements-and-state.html
     end
 
     def expression
       assignment
-      # equality()
     end
 
     def print_st
@@ -145,12 +163,31 @@ module Parser
     def expression_st
       expr = expression
       consume(Token::Type::SemiColon, "Expected ';' after value")
-      expr
+      Ast::Stmt.new(expr)
     end
 
+    def block
+      st = [] of Ast::Statement
+      while !(done || current_is?(Token::Type::RightBrace))
+        # There are cases like synch where we might return a nil
+        if decl = declaration
+          st << decl
+        end
+      end
+      consume(Token::Type::RightBrace, "Expected '}' after block")
+      Ast::Block.new(st)
+    end
+
+    # statement      → exprStmt
+    #            | printStmt
+    #            | block ;
+
+    # block          → "{" declaration* "}" ;
     def statement
       if match(Token::Type::Print)
         print_st
+      elsif match(Token::Type::LeftBrace)
+        block
       else
         expression_st
       end
@@ -183,7 +220,7 @@ module Parser
     end
 
     def parse
-      acc = [] of Ast::Program
+      acc = [] of Ast::Statement
       begin
         while !done
           if item = declaration
