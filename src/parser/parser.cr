@@ -53,6 +53,10 @@ module Parser
       end
     end
 
+    def current_is?(type)
+      @tokens[@current]?.try &.type == type
+    end
+
     # Will attempt to match to any of the provided tokens
     def match(*token_types)
       if found = token_types.includes?(@tokens[@current]?.try &.type)
@@ -162,9 +166,28 @@ module Parser
       Ast::Stmt.new(expr)
     end
 
+    def block
+      st = [] of Ast::Statement
+      while !(done || current_is?(Token::Type::RightBrace))
+        # There are cases like synch where we might return a nil
+        if decl = declaration
+          st << decl
+        end
+      end
+      consume(Token::Type::RightBrace, "Expected '}' after block")
+      Ast::Block.new(st)
+    end
+
+    # statement      → exprStmt
+    #            | printStmt
+    #            | block ;
+
+    # block          → "{" declaration* "}" ;
     def statement
       if match(Token::Type::Print)
         print_st
+      elsif match(Token::Type::LeftBrace)
+        block
       else
         expression_st
       end

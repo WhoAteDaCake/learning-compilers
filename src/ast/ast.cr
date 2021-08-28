@@ -95,5 +95,13 @@ module Ast
       "var #{@name.display} = #{@initializer.display}"
     end
   end
+
+  ast Statement, Block,
+    statements : Array(Statement) do
+    def display
+      (statements.map &.display).join('\n')
+    end
+  end
+
   alias Value = String | Float32 | Bool | Nil
 end

@@ -126,6 +126,17 @@ module Interpreter
       nil
     end
 
+    def evaluate(ast : Ast::Block)
+      prev = @env
+      @env = Environment.new(prev)
+      begin
+        ast.statements.each { |s| evaluate(s) }
+      ensure
+        @env = prev
+      end
+      nil
+    end
+
     def run
       begin
         @ast.map { |s| evaluate(s) }
