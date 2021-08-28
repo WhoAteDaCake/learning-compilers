@@ -137,6 +137,14 @@ module Interpreter
       nil
     end
 
+    def evaluate(ast : Ast::If)
+      if is_truthy(evaluate(ast.cond))
+        evaluate(ast.then_branch)
+      elsif eb = ast.else_branch
+        evaluate(eb)
+      end
+    end
+
     def run
       begin
         @ast.map { |s| evaluate(s) }

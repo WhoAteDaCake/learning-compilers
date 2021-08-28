@@ -103,5 +103,14 @@ module Ast
     end
   end
 
+  ast Statement, If,
+    cond : Expression,
+    then_branch : Statement,
+    else_branch : Statement? do
+    def display
+      "if (#{@cond.display}) {\n#{@then_branch.display}\n} else {\n#{@else_branch.try &.display}\n}"
+    end
+  end
+
   alias Value = String | Float32 | Bool | Nil
 end

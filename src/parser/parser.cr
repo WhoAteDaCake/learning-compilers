@@ -178,13 +178,31 @@ module Parser
       Ast::Block.new(st)
     end
 
-    # statement      → exprStmt
-    #            | printStmt
-    #            | block ;
+    def if_statement
+      consume(Token::Type::LeftParen, "Expected '(' before expression")
+      cond = expression
+      consume(Token::Type::RightParen, "Expected ')' after the expression")
+      then_branch = statement
+      else_branch =
+        if match(Token::Type::Else)
+          statement
+        else
+          nil
+        end
+      Ast::If.new(cond, then_branch, else_branch)
+    end
 
-    # block          → "{" declaration* "}" ;
+    # statement      → exprStmt
+    #                | ifStmt
+    #                | printStmt
+    #                | block ;
+
+    # ifStmt         → "if" "(" expression ")" statement
+    #                ( "else" statement )? ;
     def statement
-      if match(Token::Type::Print)
+      if match(Token::Type::If)
+        if_statement
+      elsif match(Token::Type::Print)
         print_st
       elsif match(Token::Type::LeftBrace)
         block
