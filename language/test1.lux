@@ -1,8 +1,4 @@
 // This is a bug, throws when it shouldn't
-var a = false;
+var a = true;
 
-if (a) {
-  print "hello";
-} else {
-  print "good bye";
-}
+print a or false;

@@ -71,6 +71,15 @@ module Ast
     end
   end
 
+  ast Expression, Logical,
+    left : Expression,
+    op : Token::Token,
+    right : Expression do
+    def display
+      "#{@left.display} #{@op.display} #{@right.display}"
+    end
+  end
+
   abstract class Statement
   end
 

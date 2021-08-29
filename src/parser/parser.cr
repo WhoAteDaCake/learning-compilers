@@ -131,8 +131,33 @@ module Parser
       expr
     end
 
-    def assignment
+    def and_expr
       expr = equality
+      while match(Token::Type::And)
+        op = previous
+        right = equality
+        expr = Ast::Logical.new(expr, op, right)
+      end
+      expr
+    end
+
+    def or_expr
+      expr = and_expr
+      while match(Token::Type::Or)
+        op = previous
+        right = and_expr
+        expr = Ast::Logical.new(expr, op, right)
+      end
+      expr
+    end
+
+    # expression     → assignment ;
+    # assignment     → IDENTIFIER "=" assignment
+    #                | logic_or ;
+    # logic_or       → logic_and ( "or" logic_and )* ;
+    # logic_and      → equality ( "and" equality )* ;
+    def assignment
+      expr = or_expr
 
       if match(Token::Type::Equal)
         equals = previous

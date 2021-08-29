@@ -98,6 +98,25 @@ module Interpreter
       end
     end
 
+    def evaluate(ast : Ast::Logical)
+      left = evaluate(ast.left)
+      if ast.op.type == Token::Type::Or
+        if is_truthy(left)
+          left
+        else
+          evaluate(ast.right)
+        end
+      else
+        # If And statment and first expression
+        # is false no need to evaluate further
+        if !is_truthy(left)
+          left
+        else
+          evaluate(ast.right)
+        end
+      end
+    end
+
     def evaluate(ast : Ast::Stmt)
       evaluate(ast.expr)
       nil
