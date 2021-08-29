@@ -15,7 +15,7 @@ module Interpreter
     end
 
     def redefine(key : Token::Token, value : Ast::Value)
-      if @values[key.name]?
+      if @values.has_key?(key.name)
         define(key, value)
         # If not in current scope, we can re-define a later variable
       elsif parent = @enclosing
@@ -26,8 +26,8 @@ module Interpreter
     end
 
     def get(key : Token::Token)
-      if value = @values[key.name]?
-        value
+      if @values.has_key?(key.name)
+        @values[key.name]?
       elsif parent = @enclosing
         parent.get(key)
       else
