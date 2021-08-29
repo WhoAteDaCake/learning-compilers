@@ -121,5 +121,13 @@ module Ast
     end
   end
 
+  ast Statement, While,
+    cond : Expression,
+    body : Statement do
+    def display
+      "while (#{@cond.display})\n#{@body.display}"
+    end
+  end
+
   alias Value = String | Float32 | Bool | Nil
 end

@@ -68,7 +68,7 @@ module Interpreter
       op = ast.operator.type
 
       if op == Token::Type::Minus
-        safe_op(Float32, left + right)
+        safe_op(Float32, left - right)
       elsif op == Token::Type::Slash
         safe_op(Float32, left / right)
       elsif op == Token::Type::Star
@@ -161,6 +161,12 @@ module Interpreter
         evaluate(ast.then_branch)
       elsif eb = ast.else_branch
         evaluate(eb)
+      end
+    end
+
+    def evaluate(ast : Ast::While)
+      while is_truthy(evaluate(ast.cond))
+        evaluate(ast.body)
       end
     end
 

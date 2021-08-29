@@ -217,16 +217,26 @@ module Parser
       Ast::If.new(cond, then_branch, else_branch)
     end
 
+    def while_st
+      consume(Token::Type::LeftParen, "Expected '(' before while expression")
+      expr = expression
+      consume(Token::Type::RightParen, "Expected ')' after while expression")
+      body = statement
+      Ast::While.new(expr, body)
+    end
+
     # statement      → exprStmt
     #                | ifStmt
     #                | printStmt
+    #                | whileStmt
     #                | block ;
 
-    # ifStmt         → "if" "(" expression ")" statement
-    #                ( "else" statement )? ;
+    # whileStmt      → "while" "(" expression ")" statement ;
     def statement
       if match(Token::Type::If)
         if_statement
+      elsif match(Token::Type::While)
+        while_st
       elsif match(Token::Type::Print)
         print_st
       elsif match(Token::Type::LeftBrace)
