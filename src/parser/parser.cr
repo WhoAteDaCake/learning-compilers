@@ -225,18 +225,65 @@ module Parser
       Ast::While.new(expr, body)
     end
 
+    # forStmt        → "for" "(" ( varDecl | exprStmt | ";" )
+    #              expression? ";"
+    #              expression? ")" statement ;
+    def for_st
+      consume(Token::Type::LeftParen, "Expected '(' before for initialier")
+      init =
+        if match(Token::Type::SemiColon)
+          nil
+        elsif match(Token::Type::Var)
+          var
+        else
+          expression_st
+        end
+
+      cond =
+        if !current_is?(Token::Type::SemiColon)
+          expression
+        else
+          Ast::Literal.new(true)
+        end
+      consume(Token::Type::SemiColon, "Expected ';' after for loop condition")
+      #
+      change =
+        if !current_is?(Token::Type::SemiColon)
+          expression
+        else
+          nil
+        end
+      consume(Token::Type::RightParen, "Expected ')' after for initialier")
+
+      body = statement
+      body =
+        if change
+          Ast::Block.new([body, Ast::Stmt.new(change)] of Ast::Statement)
+        else
+          body
+        end
+      body = Ast::While.new(cond, body)
+      # Add initializer
+      if init
+        Ast::Block.new([init, body] of Ast::Statement)
+      else
+        body
+      end
+    end
+
     # statement      → exprStmt
     #                | ifStmt
     #                | printStmt
     #                | whileStmt
+    #                | ForStmt
     #                | block ;
-
-    # whileStmt      → "while" "(" expression ")" statement ;
     def statement
       if match(Token::Type::If)
         if_statement
       elsif match(Token::Type::While)
         while_st
+      elsif match(Token::Type::For)
+        for_st
       elsif match(Token::Type::Print)
         print_st
       elsif match(Token::Type::LeftBrace)
